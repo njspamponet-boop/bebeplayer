@@ -26,6 +26,20 @@
             overflow: hidden;
             position: relative;
         }
+
+        /* Efeito de glitch / trepidação na Tela 2 */
+        .glitch-active {
+            animation: screenGlitch 0.1s infinite;
+        }
+        @keyframes screenGlitch {
+            0% { transform: translate(0, 0); filter: hue-rotate(0deg); }
+            20% { transform: translate(-3px, 2px); }
+            40% { transform: translate(3px, -2px); filter: hue-rotate(90deg); }
+            60% { transform: translate(-2px, -1px); }
+            80% { transform: translate(2px, 2px); filter: hue-rotate(180deg); }
+            100% { transform: translate(0, 0); }
+        }
+
         .container {
             max-width: 460px;
             width: 100%;
@@ -37,6 +51,20 @@
             position: relative;
             z-index: 10;
         }
+
+        /* Classes de Controle de Telas */
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
         .hearts-top {
             display: flex;
             justify-content: center;
@@ -60,6 +88,9 @@
             box-shadow: 0 4px 0 #3b5cbd;
             text-shadow: 2px 2px #284b82;
             line-height: 1.5;
+        }
+        .pixel-title-box span {
+            color: #ffe600;
         }
         .mission-box {
             background: #ffffff;
@@ -91,13 +122,13 @@
             background: linear-gradient(90deg, #7692ff, #a5b4fc, #f472b6);
             height: 100%;
             width: 75%;
-            transition: width 1s ease-in-out;
+            transition: width 0.3s ease-in-out;
         }
         .progress-text {
             position: absolute;
             width: 100%; height: 100%; top: 0; left: 0;
             display: flex; align-items: center; justify-content: center;
-            font-size: 8px; color: #1e293b; text-shadow: 1px 1px #ffffff;
+            font-size: 7px; color: #1e293b; text-shadow: 1px 1px #ffffff;
             font-weight: bold;
         }
         .btn {
@@ -119,24 +150,52 @@
             transform: translateY(5px);
             box-shadow: 0 0 #be185d;
         }
-        .hidden-message {
-            display: none;
-            margin-top: 20px;
-            font-size: 10px;
-            color: #4338ca;
-            line-height: 1.6;
+
+        /* Estilos específicos da Tela 3 (Mensagem Final Isolada) */
+        .final-screen-container {
+            max-width: 500px;
+            width: 100%;
+            background: #eef7ff;
+            border: 4px solid #4a6fa5;
+            border-radius: 16px;
+            padding: 25px 20px;
+            box-shadow: 0 8px 0 #284b82, 0 15px 25px rgba(40, 75, 130, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+        .success-bar-top {
+            background: linear-gradient(90deg, #7692ff, #a5b4fc, #f472b6);
+            border: 3px solid #4a6fa5;
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            font-size: 9px;
+            text-shadow: 1px 1px #284b82;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 0 #3b5cbd;
+        }
+        .secret-box {
             background: #fffbeb;
             border: 3px dashed #f59e0b;
-            padding: 15px;
-            border-radius: 8px;
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 10px;
+            color: #4338ca;
+            line-height: 1.8;
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
         @keyframes popIn {
             0% { transform: scale(0.5); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-        
-        /* Estilos dos confetes/elementos flutuantes */
+
+        .blink {
+            animation: blinkText 0.2s infinite alternate;
+        }
+        @keyframes blinkText {
+            0% { opacity: 1; color: #ff0000; }
+            100% { opacity: 0.2; color: #000; }
+        }
         .confetti {
             position: absolute;
             font-size: 20px;
@@ -152,64 +211,126 @@
 </head>
 <body>
 
-    <div class="container" id="mainContainer">
+    <!-- TELA 1: Início -->
+    <div class="container screen active" id="screen1">
         <div class="hearts-top">💖 💙 💖</div>
-        
         <div class="pixel-title-box">
             Nicolas & Ellen<br><span>+ NOVO PLAYER 🎮</span>
         </div>
-
         <div class="mission-box">
             💎 <b>Missão Atual:</b><br>
             > Descobrir o novo membro da equipe!<br>
             > Status: <span>Crescendo com muito amor...</span>
         </div>
-
         <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-            <div class="progress-text" id="progressText">CARREGANDO NOVO CO-OP (75%)</div>
+            <div class="progress-bar" style="width: 75%;"></div>
+            <div class="progress-text">CARREGANDO NOVO CO-OP (75%)</div>
         </div>
+        <button class="btn" onclick="goToScreen2()">PRESS START</button>
+    </div>
 
-        <button class="btn" onclick="reveal(this)">PRESS START</button>
+    <!-- TELA 2: Suspense / Hacker (Caos Controlado) -->
+    <div class="container screen" id="screen2">
+        <div class="hearts-top">💖 💙 💖</div>
+        <div class="pixel-title-box">
+            Nicolas & Ellen<br><span>+ PROTOCOLO DE SEGURANÇA 🔒</span>
+        </div>
+        <div class="mission-box">
+            💎 <b id="missionTitle">Missão Atual:</b><br>
+            > <span id="missionLine1">Descobrir o novo membro da equipe!</span><br>
+            > Status: <span id="missionStatus">Crescendo com muito amor...</span>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar2"></div>
+            <div class="progress-text" id="progressText2">CARREGANDO NOVO CO-OP (75%)</div>
+        </div>
+        <button class="btn" style="opacity: 0.5; pointer-events: none;">PROCESSANDO...</button>
+    </div>
 
-        <div id="secret" class="hidden-message">
+    <!-- TELA 3: Resultado Final Isolado (Como na sua foto) -->
+    <div class="final-screen-container screen" id="screen3">
+        <div class="success-bar-top">
+            LEVEL UP! 100% CONCLUÍDO
+        </div>
+        <div class="secret-box">
             🌟 <span style="color: #d97706;">MISSÃO CONCLUÍDA!</span> 🌟<br><br>
             <b>NOSSA FAMÍLIA VAI CRESCER!</b><br>
-            Dois novos bebês players está a caminho para completar o nosso time. Preparem os colos e as mamadeiras! 🍼✨💙💖
+            Dois novos bebês players estão a caminho para completar o nosso time. Preparem os colos e as mamadeiras! 🍼✨💙💖
         </div>
     </div>
 
     <script>
-        function reveal(btn) {
-            var msg = document.getElementById('secret');
-            var bar = document.getElementById('progressBar');
-            var txt = document.getElementById('progressText');
+        function goToScreen2() {
+            // Alterna para a Tela 2
+            document.getElementById('screen1').classList.remove('active');
+            document.getElementById('screen2').classList.add('active');
 
-            // Anima a barra de progresso para 100%
-            bar.style.width = '100%';
-            txt.innerHTML = 'LEVEL UP! 100% CONCLUÍDO';
+            var bar = document.getElementById('progressBar2');
+            var txt = document.getElementById('progressText2');
+            var status = document.getElementById('missionStatus');
+            var line1 = document.getElementById('missionLine1');
+            var body = document.body;
 
-            msg.style.display = 'block';
-            btn.style.display = 'none';
+            // Ativa o tremor/glitch na tela 2
+            body.classList.add('glitch-active');
 
-            // Criar chuva de confetes (corações, estrelas e joysticks)
-            const symbols = ['⭐', '💖', '💙', '🍼', '🎮', '✨'];
-            for (let i = 0; i < 35; i++) {
-                let confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.top = -30 + 'px';
-                confetti.style.fontSize = (Math.random() * 15 + 15) + 'px';
-                confetti.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
-                confetti.style.animationDelay = (Math.random() * 0.5) + 's';
-                document.body.appendChild(confetti);
+            // Sequência de suspense caótica na Tela 2
+            setTimeout(() => {
+                bar.style.width = '30%';
+                txt.innerHTML = 'ERROR 404: FIREWALL BYPASS';
+                txt.classList.add('blink');
+                status.innerHTML = 'QUEBRANDO SENHAS...';
+                line1.innerHTML = '01010100 01101111 01110011';
+            }, 300);
 
-                // Remover o elemento depois da animação para não pesar a memória
-                setTimeout(() => {
-                    confetti.remove();
-                }, 3500);
-            }
+            setTimeout(() => {
+                bar.style.width = '65%';
+                txt.innerHTML = 'INVASÃO DE SISTEMA...';
+                status.innerHTML = 'DECRYPTING KERNEL...';
+                line1.innerHTML = 'SYS_ROOT//ACCESS_OVERRIDE';
+            }, 900);
+
+            setTimeout(() => {
+                bar.style.width = '92%';
+                txt.innerHTML = 'PERIGO: SOBRECARGA!';
+                status.innerHTML = 'EXTRAINDO DADOS OCULTOS...';
+                line1.innerHTML = 'ALERTA: ARQUIVO CONFIDENCIAL';
+            }, 1500);
+
+            setTimeout(() => {
+                bar.style.width = '99%';
+                txt.innerHTML = 'QUASE LÁ... SEGURE OS DADOS!';
+                status.innerHTML = 'CARREGANDO SURPRESA...';
+                line1.innerHTML = 'DECODIFICAÇÃO EM 3... 2... 1...';
+            }, 2200);
+
+            // Transição para a Tela 3 após o suspense
+            setTimeout(() => {
+                // Desativa o glitch
+                body.classList.remove('glitch-active');
+
+                // Vai para a Tela 3
+                document.getElementById('screen2').classList.remove('active');
+                document.getElementById('screen3').classList.add('active');
+
+                // Chuva de confetes na Tela 3
+                const symbols = ['⭐', '💖', '💙', '🍼', '🎮', '✨', '🚨'];
+                for (let i = 0; i < 50; i++) {
+                    let confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = -30 + 'px';
+                    confetti.style.fontSize = (Math.random() * 15 + 18) + 'px';
+                    confetti.style.animationDuration = (Math.random() * 2 + 1.2) + 's';
+                    confetti.style.animationDelay = (Math.random() * 0.4) + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 4000);
+                }
+            }, 3000); // 3 segundos de suspense na tela 2
         }
     </script>
 
